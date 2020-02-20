@@ -363,3 +363,10 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+TermProject/TermProject.xcodeproj/xcuserdata/Abhi.xcuserdatad/xcschemes/xcschememanagement.plist
+TermProject/TermProject.xcodeproj/project.xcworkspace/xcuserdata/Abhi.xcuserdatad/UserInterfaceState.xcuserstate
+TermProject/TermProject.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+TermProject/TermProject.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+TermProject/TermProject.xcodeproj/project.pbxproj
+TermProject/.DS_Store
+.DS_Store
