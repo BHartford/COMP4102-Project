@@ -55,7 +55,7 @@ Point getBottomLeft(vector<Point> points, Point topLeft, Point bottomRight) {
 
 int main()
 {
-	Mat sudoku = imread("sudoku.jpeg", 0);
+	Mat sudoku = imread("ye.jpg", 0);
 
 	//Mat sudoku;
 	//pyrDown(imread("sudoku3.jpg", 0), sudoku);
@@ -112,11 +112,27 @@ int main()
 	circle(img, p3, 3, colore, -1);
 	circle(img, p4, 3, colore, -1);
 
+	vector<Point2f> corners;
+	vector<Point2f> dst;
+	corners.push_back(Point2f(p1));
+	dst.push_back(Point2f(0,0));
+	corners.push_back(Point2f(p2));
+	dst.push_back(Point2f(original.rows, original.cols));
+	corners.push_back(Point2f(p3));
+	dst.push_back(Point2f(original.cols, 0));
+	corners.push_back(Point2f(p4));
+	dst.push_back(Point2f(0, original.rows));
+
+	Mat transformMatrix = getPerspectiveTransform(corners, dst);
+	Mat originalTransformed = original.clone();
+	warpPerspective(original, originalTransformed, transformMatrix, originalTransformed.size());
+
 	for (int i = 0; i < hull.size(); i++) {
 		cout << hull[i] << "\n";
 	}
-
-	imshow("image", img);
+	imshow("original", original);
+	imshow("contour and corner points", img);
+	imshow("perspective warp", originalTransformed);
 	waitKey(0);
 	return 0;
 }
