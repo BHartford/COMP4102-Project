@@ -40,6 +40,7 @@ void printGrid(vector<vector<int>> grid) {
     }
 }
 
+// TODO: Remove, not needed? 
 vector<vector<int>> copyGrid(vector<vector<int>> source){
     
     vector<vector<int>> dest;
@@ -155,11 +156,6 @@ bool checkBoxConflict(vector<vector<int>> grid, int row, int col, int num){
 vector<vector<int>> solveGrid(vector<vector<int>> grid){
     
     // TODO: check for correct grid first
-    vector<vector<int>> copiedGrid;
-    copiedGrid = copyGrid(grid);
-    
-//    printGrid(grid);
-//    printGrid(copiedGrid);
     
     vector<tuple<int,int>> visited;
     bool conflictFlag = true;
@@ -173,10 +169,9 @@ vector<vector<int>> solveGrid(vector<vector<int>> grid){
             //each col
             
             // check for empty cell
-            cout << "\nChecking row: " << row << " , col: " << col << "\n" << endl;
             if(grid.at(row).at(col) == 0 || backTracking){
                 
-                int startNum = backTracking ? copiedGrid.at(row).at(col) + 1 : 0;
+                int startNum = backTracking ? grid.at(row).at(col) + 1 : 0;
                 backTracking = false;
                 tuple<int,int> currSpot(row, col);
                 if(visited.empty()){
@@ -187,12 +182,11 @@ vector<vector<int>> solveGrid(vector<vector<int>> grid){
                 for (int i = startNum; i < GRID_SIZE+1; i++){
                     
                     //check for conflicts with this number
-                    if(checkColConflict(copiedGrid, col, i) || checkRowConflict(copiedGrid, row, i) || checkBoxConflict(copiedGrid, row, col, i)){
-                        // there is a conflict, can't use this number, go back
-                        
-                    } else {
+                    if(!checkColConflict(grid, col, i) &&
+                       !checkRowConflict(grid, row, i) &&
+                       !checkBoxConflict(grid, row, col, i)){
                         // no conflict, so set the number
-                        copiedGrid.at(row).at(col) = i;
+                        grid.at(row).at(col) = i;
                         conflictFlag = false;
                         break;
                     }
@@ -200,7 +194,7 @@ vector<vector<int>> solveGrid(vector<vector<int>> grid){
                     
                 }
                 if(conflictFlag){
-                    // have to go back a spot
+                    // have to go back to last visited spot
                     
                     // get the last empty spot that was recorded - end of emptySpots list
                     tuple<int,int> prevCell = visited.back();
@@ -210,7 +204,7 @@ vector<vector<int>> solveGrid(vector<vector<int>> grid){
                     visited.pop_back();
                     
                     // make sure that current cell value is set to 0
-                    copiedGrid.at(row).at(col) = 0;
+                    grid.at(row).at(col) = 0;
                     
                     // set row,col coordinates to go to prev cell in next loop iteration
                     row = get<0>(prevCell);
@@ -220,39 +214,32 @@ vector<vector<int>> solveGrid(vector<vector<int>> grid){
                     
                     col = col == 0 ? 8 : col -1;
                     
-                    // Catch an infinite loop
+                    // Just incase - Catch an infinite loop
                     if(row < 0 || col < 0){
-                        cout << "\n\n-- ERROR --\nStuck back at first cell - exiting\n" << endl;
+                        cout << "\n\n-- ERROR --\nSexiting to avoid infinite loop\n" << endl;
                         printGrid(grid);
                         exit(0);
                     }
                     
-                    // flag that it's a backTrack
+                    // flag to indicate that next iteration is a "backtrack"
                     backTracking = true;
                     
                 } else {
-                
-                    // TODO: Never making it past the first row... why?
                     conflictFlag = true;
+                    
                     // add coordiantes to list of empty cells
                     visited.push_back(currSpot);
                     
                 }
                 
                 
-            } else {
-                // not empty - continue
             }
+            
+            // otherwise it's not an emapty cell
         }
     }
     cout << "\n SOLVED: \n" << endl;
-    printGrid(copiedGrid);
-    
-    // find an empty cell
-        // put a number in it - start with 1
-        // check if there are conflicts
-            // if yes, 1++ and check again
-            // else, place the number and continue
+    printGrid(grid);
     
 //    Find row, col of an unassigned cell
 //    If there is none, return true
@@ -263,7 +250,7 @@ vector<vector<int>> solveGrid(vector<vector<int>> grid){
 //      c) Else, remove digit and try another
 //    If all digits have been tried and nothing worked, return false
     
-    return copiedGrid;
+    return grid;
 }
 
 vector<outputNum> getNewNumbers(vector<vector<int>> ogGrid, vector<vector<int>> answerGrid){
@@ -294,24 +281,9 @@ int main() {
     // To test sudoku solver
     
     Mat sudoku = imread("/Users/jdlmmoore/Desktop/Screen Shot 2020-02-20 at 10.53.41 AM.png", 1);
+ 
     
-//    cvPutText(sudoku, "TEST", cvPoint(0,0), FONT_HERSHEY_PLAIN, cvScalar(255));
-    CvFont font;
-    cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 0.5, 0.5);
-//    cv::putText(sudoku, "TEST", cvPoint(2, 2), FONT_HERSHEY_PLAIN, 0.0, cvScalar(90,120,30));
-//    putText(sudoku, "TEST", Point(5,300), FONT_HERSHEY_DUPLEX, 12, Scalar(250, 250, 150), 5);
-//    utText(Mat& img, const string& text, Point org, int fontFace, double fontScale, Scalar color, int thickness=1, int lineType=8, bool bottomLeftOrigin=false )
-//    char text = 'World';
-    
-    
-
-//    char buffer[25];
-//    sprintf(buffer, "Hello  %c", text);
-//    CvFont font;
-//    cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 0.5, 0.5);
-//    cvPutText(sudoku, buffer, cvPoint(2, 2), &font, cvScalar(255));
-    
-    
+    // TEST GRID:
     
 //    vector<vector<int>> grid = {{3, 0, 6, 5, 0, 8, 4, 0, 0},
 //                                {5, 2, 0, 0, 0, 0, 0, 0, 0},
@@ -323,6 +295,8 @@ int main() {
 //                                {0, 0, 0, 0, 0, 0, 0, 7, 4},
 //                                {0, 0, 5, 2, 0, 6, 3, 0, 0}};
     
+    // TEST GRID:
+    // hardcoded grid that matches input sudoku image - blank spaces as 0s
     vector<vector<int>> grid = {{8, 0, 0, 0, 1, 0, 0, 0, 9},
                                {0, 5, 0, 8, 0, 7, 0, 1, 0},
                                {0, 0, 4, 0, 9, 0, 7, 0, 0},
@@ -355,33 +329,23 @@ int main() {
     }
     
 //    line(Mat& img, Point pt1, Point pt2, const Scalar& color, int thickness=1, int lineType=8, int shift=0)
-    int yStart = 0;
-    int yEnd = 9 * cellHeight + yPadding;
-    
-    int xStart = 0;
-    int xEnd = 9 * cellWidth + xPadding;
+    int start = 0;
+    int end = 9 * cellHeight + yPadding;
     
     
-    // draw vertical lines
+    // draw vertical and horizontal lines that form "boxes"
     for(int i = 0; i < 4; i++){
-        int xLine = (i*3) * cellWidth + 26;
-        Point p1 = Point(xLine, yStart);
-        Point p2 = Point(xLine, yEnd);
+        int linePos = (i*3) * cellWidth + 26;
+        Point h_p1 = Point(start, linePos);
+        Point h_p2 = Point(end, linePos);
         
-        line(sudoku, p1, p2, Scalar(170, 0, 250), 3);
-    }
-    
-    // draw horizontal lines
-    for(int i = 0; i < 4; i++){
-        int yLine = (i*3) * cellWidth + 26;
-        Point p1 = Point(xStart, yLine);
-        Point p2 = Point(xEnd, yLine);
+        Point v_p1 = Point(linePos, start);
+        Point v_p2 = Point(linePos, end);
         
-        line(sudoku, p1, p2, Scalar(170, 0, 250), 3);
+        
+        line(sudoku, h_p1, h_p2, Scalar(170, 0, 250), 3);
+        line(sudoku, v_p1, v_p2, Scalar(170, 0, 250), 3);
     }
-//    line(sudoku, p1, p2, Scalar(170, 150, 250), 3);//, int thickness=1, int lineType=8, int shift=0)
-//    line(sudoku, p3, p4, Scalar(170, 150, 250), 3);
-//    line(sudoku, p5, p6, Scalar(170, 150, 250), 3);
     
     imshow("image", sudoku);
     waitKey(0);
