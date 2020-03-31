@@ -53,29 +53,19 @@ Point getBottomLeft(vector<Point> points, Point topLeft, Point bottomRight) {
 	return bottomLeftPoint;
 }
 
-int main()
-{
-	Mat sudoku = imread("ye.jpg", 0);
+Mat warpSudokuGrid(Mat sudokuImg) {
 
-	//Mat sudoku;
-	//pyrDown(imread("sudoku3.jpg", 0), sudoku);
-
-	Mat original = sudoku.clone();
+	Mat original = sudokuImg.clone();
 	Mat img = Mat::zeros(original.rows, original.cols, CV_8UC3);
 
-	// Create a duplicate. We'll try to extract grid lines in this image
-	Mat outerBox = sudoku.clone();
+	Mat outerBox = sudokuImg.clone();
 
-
-	//erode(sudoku, sudoku, kernel);
-
-	GaussianBlur(sudoku, sudoku, Size(9, 9), 0);
-	adaptiveThreshold(sudoku, outerBox, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 11, 2);
+	GaussianBlur(sudokuImg, sudokuImg, Size(9, 9), 0);
+	adaptiveThreshold(sudokuImg, outerBox, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 11, 2);
 
 	bitwise_not(outerBox, outerBox);
 
 	Mat kernel = (Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
-	//dilate(outerBox, outerBox, kernel);
 
 	Canny(outerBox, outerBox, 30, 60, 3);
 
@@ -97,7 +87,7 @@ int main()
 	}
 
 	Scalar color(rand() & 255, rand() & 255, rand() & 255);
-	Scalar colore(0,0,255);
+	Scalar colore(0, 0, 255);
 	drawContours(img, contours, finalIndex, color, FILLED, 8, output);
 
 	vector<Point> hull(contours[finalIndex].size());
@@ -115,7 +105,7 @@ int main()
 	vector<Point2f> corners;
 	vector<Point2f> dst;
 	corners.push_back(Point2f(p1));
-	dst.push_back(Point2f(0,0));
+	dst.push_back(Point2f(0, 0));
 	corners.push_back(Point2f(p2));
 	dst.push_back(Point2f(original.rows, original.cols));
 	corners.push_back(Point2f(p3));
@@ -127,12 +117,22 @@ int main()
 	Mat originalTransformed = original.clone();
 	warpPerspective(original, originalTransformed, transformMatrix, originalTransformed.size());
 
-	for (int i = 0; i < hull.size(); i++) {
-		cout << hull[i] << "\n";
-	}
-	imshow("original", original);
-	imshow("contour and corner points", img);
-	imshow("perspective warp", originalTransformed);
+	//for (int i = 0; i < hull.size(); i++) {
+	//	cout << hull[i] << "\n";
+	//}
+	//imshow("original", original);
+	//imshow("contour and corner points", img);
+	//imshow("perspective warp", originalTransformed);
+
+	return originalTransformed;
+}
+
+int main()
+{
+	Mat sudoku = imread("sudokuGood.jpg", 0);
+	//warpedSudoku is the image that has been warped to only show the grid
+	Mat warpedSudoku = warpSudokuGrid(sudoku);
+	imshow("warped", warpedSudoku);
 	waitKey(0);
 	return 0;
 }
