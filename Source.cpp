@@ -497,11 +497,11 @@ Mat removeGridLines(Mat thresholded31){
     
     int p2=0;int p3=0;
     
-    while(p3<450)
+    while(p3<thresholded31.cols)
     {
         for( int i=p3;i<p3+10;i++)
         {
-            for(int j=0;j<450;j++)
+            for(int j=0;j<thresholded31.cols;j++)
             {
                 thresholded31.at<uchar>(j,i)=0;
 
@@ -510,9 +510,9 @@ Mat removeGridLines(Mat thresholded31){
         p3+=47;
     }
 
-    while(p2<450)
+    while(p2<thresholded31.cols)
     {
-        for( int i=0;i<450;i++)
+        for( int i=0;i<thresholded31.cols;i++)
         {
             for(int j=p2;j<p2+10;j++)
             {
@@ -523,23 +523,23 @@ Mat removeGridLines(Mat thresholded31){
         p2+=47;
     }
 
-    for(int i=440;i<450;i++)
+    for(int i=thresholded31.cols - 10;i<thresholded31.cols;i++)
     {
-        for(int j=0;j<450;j++)
+        for(int j=0;j<thresholded31.cols;j++)
         {
             thresholded31.at<uchar>(j,i)=0;
         }
     }
 
-    for(int i=0;i<450;i++)
+    for(int i=0;i<thresholded31.cols;i++)
     {
-        for(int j=440;j<450;j++)
+        for(int j=thresholded31.cols - 10;j<thresholded31.cols;j++)
         {
             thresholded31.at<uchar>(j,i)=0;
         }
     }
 
-    for(int i=0;i<450;i++)
+    for(int i=0;i<thresholded31.cols;i++)
     {
         for(int j=150;j<160;j++)
         {
@@ -611,9 +611,9 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
     vector <Mat> small; vector <Mat> smallt;
 
     int m = 0, n = 0; Mat smallimage; Mat smallimage2;
-    for (; m < 450; m = m + 50)
+    for (; m < thresholded31.cols; m = m + 50)
     {
-        for (n = 0; n < 450; n = n + 50)
+        for (n = 0; n < thresholded31.cols; n = n + 50)
         {
 
             smallimage = Mat(thresholded31, cv::Rect(n, m, 50, 50));
