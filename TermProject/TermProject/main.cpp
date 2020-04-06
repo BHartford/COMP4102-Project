@@ -136,9 +136,6 @@ int main( int argc, char** argv )
     // Read original image
     Mat src = imread("/Users/Abhi/Desktop/Abhi/School/Fourth Year/COMP4102/COMP4102-Project/ye.jpg",CV_LOAD_IMAGE_UNCHANGED);
     
-    /*
-    
-    
     resize(src,src,Size(540,540),0,0,INTER_NEAREST);
     
     //if fail to read the image
@@ -254,15 +251,8 @@ int main( int argc, char** argv )
     
     warpPerspective(src, mat, wrap, Size(450, 450));
     
-    imwrite("/Users/Abhi/Desktop/Abhi/School/Fourth Year/COMP4102/COMP4102-Project/sudokuPart.jpg", mat);
-    */
-    //Place stuff before.
-    
-    Mat mat = imread("/Users/Abhi/Desktop/Abhi/School/Fourth Year/COMP4102/COMP4102-Project/sudokuPart.jpg");
-    
-    
     imshow("sudoku part",mat);
-
+    waitKey(0);
     Mat ch; Mat thresholded31;
     
     cvtColor(mat,ch,CV_BGR2GRAY);
