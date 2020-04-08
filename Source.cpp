@@ -303,7 +303,6 @@ Mat drawSolutionOnImage(Mat sudoku, vector<outputNum> addedNums){
         string value = to_string(addedNum.valNum);
         int y = addedNum.rowNum * cellHeight + yPadding;
         int x = addedNum.colNum * cellWidth + xPadding;
-		cout << "x: " << x << " y: " << y << " val: " << value << "\n";
         putText(sudoku, value, Point(x,y), FONT_HERSHEY_DUPLEX, 1.5, Scalar(250, 0, 0), 2);
         
     }
@@ -767,8 +766,6 @@ int main( int argc, char** argv )
 		}
 		cout << "\n";
 	}
-	//imshow("asd", thresholded31);
-	//waitKey(0);
     // solve puzzle, and show solution on original image
     
     vector<vector<int>> solvedGrid = solveGrid(grid);
