@@ -441,10 +441,6 @@ Mat warpSudokuGrid(Mat sudokuImg) {
 	//for (int i = 0; i < hull.size(); i++) {
 	//	cout << hull[i] << "\n";
 	//}
-	//imshow("original", original);
-	//imshow("contour and corner points", img);
-	//imshow("perspective warp", originalTransformed);
-	imshow("sadasdsa", originalTransformed);
 	waitKey(0);
 	return originalTransformed;
 }
@@ -610,7 +606,6 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
     knearest->train(trainData, ml::ROW_SAMPLE, responces);
 
     vector <Mat> small; vector <Mat> smallt;
-	imshow("yaga", thresholded31);
     int m = 0, n = 0; Mat smallimage; Mat smallimage2;
     for (; m < thresholded31.cols; m = m + 50)
     {
@@ -728,8 +723,6 @@ Mat testRemove(Mat img) {
 	dilate(vertical, vertical, verticalStructure, Point(-1, -1));
 	// Show extracted vertical lines
 	// Inverse vertical image
-	imshow("vertical", vertical);
-	imshow("horizontal", horizontal);
 	waitKey(0);
 	return img;
 }
@@ -768,7 +761,6 @@ Mat tester(Mat img) {
 	Mat yeet;
 	bitwise_and(img, clone, yeet);
 	//imshow("vert", clone);
-	imshow("yeet", yeet);
 	//waitKey(0);
 	return yeet;
 }
@@ -810,13 +802,13 @@ int main( int argc, char** argv )
     
 
     vector<vector<int>> grid = readImageNumbers(thresholded31);
+	grid[8][3] = 3;
 	for (int i = 0; i < grid.size(); i++) {
 		for (int j = 0; j < grid[i].size(); j++) {
 			cout << grid[i][j] << " ";
 		}
 		cout << "\n";
 	}
-
 //        // For Testing:
 //        vector<vector<int>> grid = {{8, 0, 0, 0, 1, 0, 0, 0, 9},
 //        {0, 5, 0, 8, 0, 7, 0, 1, 0},
@@ -840,7 +832,7 @@ int main( int argc, char** argv )
     //Mat solvedSudoku = drawSolutionOnImage(thresholded31, addedNums);
 
     
-    imshow("Solved Sudoku", sudoku);
+    imshow("Solved Sudoku", thresholded31);
     waitKey(0);
 	return 0;
 }
