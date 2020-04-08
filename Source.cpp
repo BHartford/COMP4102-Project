@@ -563,7 +563,7 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
 
         DIR *dir;
         struct dirent *ent;
-        char pathToImages[]="digits3";
+        char pathToImages[]="images/digits3";
         
         char path[255];
         sprintf(path, "%s/%d", pathToImages, i);
@@ -611,12 +611,12 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
     vector <Mat> small; vector <Mat> smallt;
 	imshow("yaga", thresholded31);
     int m = 0, n = 0; Mat smallimage; Mat smallimage2;
-    for (; m < thresholded31.rows; m = m + 100)
+    for (; m < thresholded31.rows; m = m + 50)
     {
-        for (n = 0; n < thresholded31.cols; n = n + 100)
+        for (n = 0; n < thresholded31.cols; n = n + 50)
         {
-			if (m < thresholded31.rows - 100 && n < thresholded31.cols - 100) {
-				smallimage = Mat(thresholded31, cv::Rect(n, m, 100, 100));
+			if (m < thresholded31.rows - 50 && n < thresholded31.cols - 50) {
+				smallimage = Mat(thresholded31, cv::Rect(n, m, 50, 50));
 			}
 
             smallt.push_back(smallimage);
@@ -663,7 +663,6 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
             Rect rec = prevb;
 
             regionOfInterest = smallt[i](rec);
-			imshow("reg", regionOfInterest);
 
             resize(regionOfInterest, img12, Size(16,16),0,0,INTER_NEAREST);
 
@@ -676,13 +675,10 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
             Mat output;
             if(countNonZero(img12)>50)
             {
-               imshow("display" + i,img12);
-               // waitKey(0);
-                /*for(int k=0;k<size;k++)
-                {
-                    img123.at<float>(k) = img12.at<float>(k);
-                }*/
-			   img123 = img12.clone();
+			   for (int k = 0; k < size; k++)
+			   {
+				   img123.at<float>(k) = img12.at<float>(k);
+			   }
                 Mat res;
                 float p = knearest->findNearest(img123.reshape(1,1), 1, res);
 				cout << p << "\n";
@@ -810,8 +806,8 @@ int main( int argc, char** argv )
     //thresholded31 = removeGridLines(thresholded31);
 	thresholded31 = tester(test);
 
-    //imshow("thresholded new",thresholded31);
-	//waitKey(0);
+    imshow("thresholded new",thresholded31);
+	waitKey(0);
 
     // Identify numbers from image and create a grid
     
@@ -840,16 +836,14 @@ int main( int argc, char** argv )
     
     // solve puzzle, and show solution on original image
     
-    vector<vector<int>> solvedGrid = solveGrid(grid);
+    //vector<vector<int>> solvedGrid = solveGrid(grid);
 
-    vector<outputNum> addedNums = getNewNumbers(grid, solvedGrid);
+    //vector<outputNum> addedNums = getNewNumbers(grid, solvedGrid);
 
-    Mat solvedSudoku = drawSolutionOnImage(thresholded31, addedNums);
+    //Mat solvedSudoku = drawSolutionOnImage(thresholded31, addedNums);
 
     
-    imshow("Solved Sudoku", solvedSudoku);
-    
+    imshow("Solved Sudoku", sudoku);
     waitKey(0);
-    return 0;
-
+	return 0;
 }
