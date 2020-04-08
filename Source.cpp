@@ -152,31 +152,32 @@ bool checkBoxConflict(vector<vector<int>> grid, int row, int col, int num){
     
     return false;
 }
-
+Mat lmao = imread("sudoku.jpeg", 0);
 vector<vector<int>> solveGrid(vector<vector<int>> grid){
+	vector<vector<int>> cloneGrid(grid);
     
     // TODO: check for correct grid first
     
-    vector<tuple<int,int>> visited;
+    //vector<tuple<int,int>> visited;
     bool conflictFlag = true;
     bool backTracking = false;
     
     
-    for(int row = 0; row < GRID_SIZE; row++){
+    for(int row = 0; row < GRID_SIZE;){
         // each row
         
-        for(int col = 0; col < GRID_SIZE; col++){
+        for(int col = 0; col < GRID_SIZE;){
             //each col
             
             // check for empty cell
-            if(grid.at(row).at(col) == 0 || backTracking){
+            if((cloneGrid.at(row).at(col) == 0 && backTracking) || grid.at(row).at(col) == 0){
                 
-                int startNum = backTracking ? grid.at(row).at(col) + 1 : 0;
+                int startNum = backTracking ? grid.at(row).at(col) + 1 : 1;
                 backTracking = false;
-                tuple<int,int> currSpot(row, col);
-                if(visited.empty()){
-                    visited.push_back(currSpot);
-                }
+                //tuple<int,int> currSpot(row, col);
+                //if(visited.empty()){
+                //    visited.push_back(currSpot);
+               // }
                 
                 // starting at one, add a number and check for conflicts
                 for (int i = startNum; i < GRID_SIZE+1; i++){
@@ -187,6 +188,7 @@ vector<vector<int>> solveGrid(vector<vector<int>> grid){
                        !checkBoxConflict(grid, row, col, i)){
                         // no conflict, so set the number
                         grid.at(row).at(col) = i;
+						col++;
                         conflictFlag = false;
                         break;
                     }
@@ -197,28 +199,32 @@ vector<vector<int>> solveGrid(vector<vector<int>> grid){
                     // have to go back to last visited spot
                     
                     // get the last empty spot that was recorded - end of emptySpots list
-                    tuple<int,int> prevCell = visited.back();
-                    cout << "Going back to cell: " << get<0>(prevCell) << ", " << get<1>(prevCell) << endl;
+                    //tuple<int,int> prevCell = visited.back();
+                    //cout << "Going back to cell: " << get<0>(prevCell) << ", " << get<1>(prevCell) << endl;
                     
                     // remove it from list
-                    visited.pop_back();
+                   // visited.pop_back();
                     
                     // make sure that current cell value is set to 0
                     grid.at(row).at(col) = 0;
                     
                     // set row,col coordinates to go to prev cell in next loop iteration
-                    row = get<0>(prevCell);
-                    col = get<1>(prevCell);
-                    
-                    row = col == 0 ? row - 1 : row;
-                    
-                    col = col == 0 ? 8 : col -1;
+
+					if (col == 0) {
+						row -= 1;
+						col = 8;
+					}
+					else {
+						col--;
+					}
                     
                     // Just incase - Catch an infinite loop
                     if(row < 0 || col < 0){
                         cout << "\n\n-- ERROR --\nSexiting to avoid infinite loop\n" << endl;
                         printGrid(grid);
-                        exit(0);
+						imshow("lmao", lmao);
+						waitKey(0);
+                        //exit(0);
                     }
                     
                     // flag to indicate that next iteration is a "backtrack"
@@ -228,15 +234,27 @@ vector<vector<int>> solveGrid(vector<vector<int>> grid){
                     conflictFlag = true;
                     
                     // add coordiantes to list of empty cells
-                    visited.push_back(currSpot);
+                    //visited.push_back(currSpot);
                     
                 }
                 
-                
-            }
-            
+			} else {
+				if (backTracking) {
+					if (col == 0) {
+						row -= 1;
+						col = 8;
+					}
+					else {
+						col--;
+					}
+				}
+				else {
+					col++;
+				}
+			}
             // otherwise it's not an emapty cell
         }
+		row++;
     }
     cout << "\n SOLVED: \n" << endl;
     printGrid(grid);
@@ -280,7 +298,7 @@ vector<outputNum> getNewNumbers(vector<vector<int>> ogGrid, vector<vector<int>> 
 int main() {
     // To test sudoku solver
     
-    Mat sudoku = imread("/Users/jdlmmoore/Desktop/Screen Shot 2020-02-20 at 10.53.41 AM.png", 1);
+	Mat sudoku = imread("sudoku.jpeg", 0);
  
     
     // TEST GRID:
@@ -297,7 +315,7 @@ int main() {
     
     // TEST GRID:
     // hardcoded grid that matches input sudoku image - blank spaces as 0s
-    vector<vector<int>> grid = {{8, 0, 0, 0, 1, 0, 0, 0, 9},
+   /*vector<vector<int>> grid = {{8, 0, 0, 0, 1, 0, 0, 0, 9},
                                {0, 5, 0, 8, 0, 7, 0, 1, 0},
                                {0, 0, 4, 0, 9, 0, 7, 0, 0},
                                {0, 6, 0, 7, 0, 1, 0, 2, 0},
@@ -305,11 +323,22 @@ int main() {
                                {0, 1, 0, 5, 0, 2, 0, 9, 0},
                                {0, 0, 7, 0, 4, 0, 6, 0, 0},
                                {0, 8, 0, 3, 0, 9, 0, 4, 0},
-                               {3, 0, 0, 0, 5, 0, 0, 0, 8}};
+                               {3, 0, 0, 0, 5, 0, 0, 0, 8}};*/
+
+	vector<vector<int>> grid = { {0, 0, 0, 6, 0, 4, 7, 0, 0},
+							   {7, 0, 6, 0, 0, 0, 0, 0, 9},
+							   {0, 0, 0, 0, 0, 5, 0, 8, 0},
+							   {0, 7, 0, 0, 2, 0, 0, 9, 3},
+							   {8, 0, 0, 0, 0, 0, 0, 0, 5},
+							   {4, 3, 0, 0, 1, 0, 0, 7, 0},
+							   {0, 5, 0, 2, 0, 0, 0, 0, 0},
+							   {3, 0, 0, 0, 0, 0, 2, 0, 8},
+							   {0, 0, 2, 3, 0, 1, 0, 0, 0} };
     
 //    printGrid(grid);
     vector<vector<int>> solvedGrid = solveGrid(grid);
-    
+	//imshow("as", sudoku);
+	//waitKey(0);
     vector<outputNum> addedNums = getNewNumbers(grid, solvedGrid);
     
     int cellWidth = (sudoku.cols - 40) / GRID_SIZE;
