@@ -304,7 +304,7 @@ Mat drawSolutionOnImage(Mat sudoku, vector<outputNum> addedNums){
         int y = addedNum.rowNum * cellHeight + yPadding;
         int x = addedNum.colNum * cellWidth + xPadding;
 		cout << "x: " << x << " y: " << y << " val: " << value << "\n";
-        putText(sudoku, value, Point(x,y), FONT_HERSHEY_DUPLEX, 1.5, Scalar(170, 150, 250), 1);
+        putText(sudoku, value, Point(x,y), FONT_HERSHEY_DUPLEX, 1.5, Scalar(250, 0, 0), 2);
         
     }
     
@@ -321,8 +321,8 @@ Mat drawSolutionOnImage(Mat sudoku, vector<outputNum> addedNums){
         Point v_p2 = Point(linePos, end);
         
         
-        line(sudoku, h_p1, h_p2, Scalar(170, 0, 250), 3);
-        line(sudoku, v_p1, v_p2, Scalar(170, 0, 250), 3);
+        line(sudoku, h_p1, h_p2, Scalar(0, 0, 250), 3);
+        line(sudoku, v_p1, v_p2, Scalar(0, 0, 250), 3);
     }
     
     return sudoku;
@@ -748,7 +748,7 @@ int main( int argc, char** argv )
 {
     // Pre-processing the image
     
-    Mat sudoku = imread("sudoku.jpeg", 0);
+    Mat sudoku = imread("sudoku2.jpg", 0);
 	resize(sudoku, sudoku, Size(540, 540), 0, 0, INTER_NEAREST);
 
     // warpedSudoku is the image that has been warped to only show the grid
@@ -758,7 +758,6 @@ int main( int argc, char** argv )
     Mat thresholded31;
 
 	thresholded31 = removeGridLinesNew(test);
-
     // Identify numbers from image and create a grid
     
     vector<vector<int>> grid = readImageNumbers(thresholded31);
@@ -768,7 +767,8 @@ int main( int argc, char** argv )
 		}
 		cout << "\n";
 	}
-    
+	//imshow("asd", thresholded31);
+	//waitKey(0);
     // solve puzzle, and show solution on original image
     
     vector<vector<int>> solvedGrid = solveGrid(grid);
