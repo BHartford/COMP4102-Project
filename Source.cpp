@@ -437,14 +437,15 @@ Mat warpSudokuGrid(Mat sudokuImg) {
 	Mat transformMatrix = getPerspectiveTransform(corners, dst);
 	Mat originalTransformed = original.clone();
 	warpPerspective(original, originalTransformed, transformMatrix, originalTransformed.size());
-
+	resize(originalTransformed, originalTransformed, Size(450, 450), 0, 0, INTER_NEAREST);
 	//for (int i = 0; i < hull.size(); i++) {
 	//	cout << hull[i] << "\n";
 	//}
 	//imshow("original", original);
 	//imshow("contour and corner points", img);
 	//imshow("perspective warp", originalTransformed);
-
+	imshow("sadasdsa", originalTransformed);
+	waitKey(0);
 	return originalTransformed;
 }
 //
@@ -501,7 +502,7 @@ Mat removeGridLines(Mat thresholded31){
     {
         for( int i=p3;i<p3+10;i++)
         {
-            for(int j=0;j<thresholded31.rows;j++)
+            for(int j=0;j<thresholded31.cols;j++)
             {
                 thresholded31.at<uchar>(j,i)=0;
 
@@ -510,7 +511,7 @@ Mat removeGridLines(Mat thresholded31){
         p3+=47;
     }
 
-    while(p2<thresholded31.rows)
+    while(p2<thresholded31.cols)
     {
         for( int i=0;i<thresholded31.cols;i++)
         {
@@ -525,7 +526,7 @@ Mat removeGridLines(Mat thresholded31){
 
     for(int i=thresholded31.cols - 10;i<thresholded31.cols;i++)
     {
-        for(int j=0;j<thresholded31.rows;j++)
+        for(int j=0;j<thresholded31.cols;j++)
         {
             thresholded31.at<uchar>(j,i)=0;
         }
@@ -533,7 +534,7 @@ Mat removeGridLines(Mat thresholded31){
 
     for(int i=0;i<thresholded31.cols;i++)
     {
-        for(int j=thresholded31.rows - 10;j<thresholded31.rows;j++)
+        for(int j=thresholded31.cols - 10;j<thresholded31.cols;j++)
         {
             thresholded31.at<uchar>(j,i)=0;
         }
@@ -611,13 +612,11 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
     vector <Mat> small; vector <Mat> smallt;
 	imshow("yaga", thresholded31);
     int m = 0, n = 0; Mat smallimage; Mat smallimage2;
-    for (; m < thresholded31.rows; m = m + 50)
+    for (; m < thresholded31.cols; m = m + 50)
     {
         for (n = 0; n < thresholded31.cols; n = n + 50)
         {
-			if (m < thresholded31.rows - 50 && n < thresholded31.cols - 50) {
-				smallimage = Mat(thresholded31, cv::Rect(n, m, 50, 50));
-			}
+			smallimage = Mat(thresholded31, cv::Rect(n, m, 50, 50));
 
             smallt.push_back(smallimage);
         }
@@ -744,7 +743,7 @@ Mat tester(Mat img) {
 	erode(img, img, 2);
 	Mat clone = img.clone();
 	Mat detected_lines;
-	Mat horizontal_kernel = getStructuringElement(MORPH_RECT, Size(25, 1));
+	Mat horizontal_kernel = getStructuringElement(MORPH_RECT, Size(20, 1));
 	morphologyEx(img, detected_lines, MORPH_OPEN, horizontal_kernel, Point(-1,-1), 2);
 	//cnts = cv2.findContours(detected_lines, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 	vector<vector<Point> > contours;
@@ -759,7 +758,7 @@ Mat tester(Mat img) {
 
 	vector<vector<Point> > contours_vert;
 	Mat detected_lines_vert;
-	Mat vertical_kernel = getStructuringElement(MORPH_RECT, Size(1, 25));
+	Mat vertical_kernel = getStructuringElement(MORPH_RECT, Size(1, 20));
 	morphologyEx(clone, detected_lines_vert, MORPH_OPEN, vertical_kernel, Point(-1, -1), 2);
 	//cnts = cv2.findContours(detected_lines, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 	findContours(detected_lines_vert, contours_vert, RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
@@ -780,6 +779,7 @@ int main( int argc, char** argv )
     // Pre-processing the image
     
     Mat sudoku = imread("sudokuGood.jpg", 0);
+	resize(sudoku, sudoku, Size(540, 540), 0, 0, INTER_NEAREST);
 
     // warpedSudoku is the image that has been warped to only show the grid
     Mat warpedSudoku = warpSudokuGrid(sudoku);
@@ -805,9 +805,6 @@ int main( int argc, char** argv )
 
     //thresholded31 = removeGridLines(thresholded31);
 	thresholded31 = tester(test);
-
-    imshow("thresholded new",thresholded31);
-	waitKey(0);
 
     // Identify numbers from image and create a grid
     
