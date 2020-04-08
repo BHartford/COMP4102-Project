@@ -53,7 +53,7 @@ Point getBottomLeft(vector<Point> points, Point topLeft, Point bottomRight) {
 	return bottomLeftPoint;
 }
 
-int main()
+/*int main()
 {
 	Mat sudoku = imread("ye.jpg", 0);
 
@@ -135,4 +135,4 @@ int main()
 	imshow("perspective warp", originalTransformed);
 	waitKey(0);
 	return 0;
-}
+}*/
