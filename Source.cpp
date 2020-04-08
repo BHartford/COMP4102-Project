@@ -168,98 +168,102 @@ bool checkBoxConflict(vector<vector<int>> grid, int row, int col, int num){
     return false;
 }
 
-vector<vector<int>> solveGrid(vector<vector<int>> grid){
-    
-    //    Find row, col of an unassigned cell
-    //    If there is none, return true
-    //    For digits from 1 to 9
-    //      a) If there is no conflict for digit at row, col
-    //          assign digit to row, col and recursively try fill in rest of grid
-    //      b) If recursion successful, return true
-    //      c) Else, remove digit and try another
-    //    If all digits have been tried and nothing worked, return false
-    
-    vector<tuple<int,int>> visited;
-    bool conflictFlag = true;
-    bool backTracking = false;
-    int count = 0;
-    
-    for(int row = 0; row < GRID_SIZE; row++){
-        // each row
-        
-        for(int col = 0; col < GRID_SIZE; col++){
-            //each col
-            
-            // check for empty cell
-            if(grid.at(row).at(col) == 0 || backTracking){
-                
-                int startNum = backTracking ? grid.at(row).at(col) + 1 : 0;
-                backTracking = false;
-                tuple<int,int> currSpot(row, col);
-                if(visited.empty()){
-                    visited.push_back(currSpot);
-                }
-                
-                // starting at one, add a number and check for conflicts
-                for (int i = startNum; i < GRID_SIZE+1; i++){
-                    
-                    //check for conflicts with this number
-                    if(!checkColConflict(grid, col, i) &&
-                       !checkRowConflict(grid, row, i) &&
-                       !checkBoxConflict(grid, row, col, i)){
-                        // no conflict, so set the number
-                        grid.at(row).at(col) = i;
-                        conflictFlag = false;
-                        break;
-                    }
-                    
-                }
-                if(conflictFlag){
-                    // have to go back to last visited spot
-                    
-                    // get the last empty spot that was recorded - end of emptySpots list
-                    tuple<int,int> prevCell = visited.back();
-//                    cout << "Going back to cell: " << get<0>(prevCell) << ", " << get<1>(prevCell) << endl;
-                    
-                    // remove it from list
-                    visited.pop_back();
-                    
-                    // make sure that current cell value is set to 0
-                    grid.at(row).at(col) = 0;
-                    
-                    // set row,col coordinates to go to prev cell in next loop iteration
-                    row = get<0>(prevCell);
-                    col = get<1>(prevCell);
-                    
-                    row = col == 0 ? row - 1 : row;
-                    
-                    col = col == 0 ? 8 : col -1;
-                    
-                    // Just incase - Catch an infinite loop
-                    if(row < 0 || col < 0 || count > 1000){
-                        cout << "\n\n-- ERROR - Not Solveable --\nexiting to avoid infinite loop\n" << endl;
-                        printGrid(grid);
-                        exit(0);
-                    }
-                    
-                    // flag to indicate that next iteration is a "backtrack"
-                    backTracking = true;
-                    
-                } else {
-                    conflictFlag = true;
-                    
-                    // add coordiantes to list of empty cells
-                    visited.push_back(currSpot);
-                }
-            }
-            count++;
-            // otherwise it's not an emapty cell
-        }
-    }
-    
-    cout << "\n SOLVED: \n" << endl;
-    printGrid(grid);
-    return grid;
+vector<vector<int>> solveGrid(vector<vector<int>> grid) {
+	vector<vector<int>> cloneGrid(grid);
+
+	// TODO: check for correct grid first
+
+	//vector<tuple<int,int>> visited;
+	bool conflictFlag = true;
+	bool backTracking = false;
+
+
+	for (int row = 0; row < GRID_SIZE;) {
+		// each row
+
+		for (int col = 0; col < GRID_SIZE;) {
+			//each col
+
+			// check for empty cell
+			if ((cloneGrid.at(row).at(col) == 0 && backTracking) || grid.at(row).at(col) == 0) {
+
+				int startNum = backTracking ? grid.at(row).at(col) + 1 : 1;
+				backTracking = false;
+
+				// starting at one, add a number and check for conflicts
+				for (int i = startNum; i < GRID_SIZE + 1; i++) {
+
+					//check for conflicts with this number
+					if (!checkColConflict(grid, col, i) &&
+						!checkRowConflict(grid, row, i) &&
+						!checkBoxConflict(grid, row, col, i)) {
+						// no conflict, so set the number
+						grid.at(row).at(col) = i;
+						col++;
+						conflictFlag = false;
+						break;
+					}
+
+
+				}
+				if (conflictFlag) {
+					// have to go back to last visited spot
+
+					// make sure that current cell value is set to 0
+					grid.at(row).at(col) = 0;
+
+					// set row,col coordinates to go to prev cell in next loop iteration
+
+					if (col == 0) {
+						row -= 1;
+						col = 8;
+					}
+					else {
+						col--;
+					}
+
+					// Just incase - Catch an infinite loop
+					if (row < 0 || col < 0) {
+						cout << "\n\n-- ERROR --\nSexiting to avoid infinite loop\n" << endl;
+						printGrid(grid);
+						exit(0);
+					}
+
+					// flag to indicate that next iteration is a "backtrack"
+					backTracking = true;
+
+				}
+				else {
+					conflictFlag = true;
+
+					// add coordiantes to list of empty cells
+					//visited.push_back(currSpot);
+
+				}
+
+			}
+			else {
+				if (backTracking) {
+					if (col == 0) {
+						row -= 1;
+						col = 8;
+					}
+					else {
+						col--;
+					}
+				}
+				else {
+					col++;
+				}
+			}
+			// otherwise it's not an emapty cell
+		}
+		row++;
+	}
+	cout << "\n SOLVED: \n" << endl;
+	printGrid(grid);
+
+	return grid;
 }
 
 vector<outputNum> getNewNumbers(vector<vector<int>> ogGrid, vector<vector<int>> answerGrid){
@@ -288,10 +292,10 @@ vector<outputNum> getNewNumbers(vector<vector<int>> ogGrid, vector<vector<int>> 
 }
 
 Mat drawSolutionOnImage(Mat sudoku, vector<outputNum> addedNums){
-    int cellWidth = (sudoku.cols - 40) / GRID_SIZE;
-    int cellHeight = (sudoku.rows - 40) / GRID_SIZE;
-    int yPadding = 115; // extra padding needed for y-coordinates
-    int xPadding = 40; // extra padding needed for x-coordinates
+	int cellWidth = 50;
+	int cellHeight = 50;
+    int yPadding = 45; // extra padding needed for y-coordinates
+    int xPadding = 10; // extra padding needed for x-coordinates
     
     for(int i = 0; i < addedNums.size(); i++){
         outputNum addedNum = addedNums.at(i);
@@ -299,8 +303,8 @@ Mat drawSolutionOnImage(Mat sudoku, vector<outputNum> addedNums){
         string value = to_string(addedNum.valNum);
         int y = addedNum.rowNum * cellHeight + yPadding;
         int x = addedNum.colNum * cellWidth + xPadding;
-        
-        putText(sudoku, value, Point(x,y), FONT_HERSHEY_DUPLEX, 4, Scalar(170, 150, 250), 1);
+		cout << "x: " << x << " y: " << y << " val: " << value << "\n";
+        putText(sudoku, value, Point(x,y), FONT_HERSHEY_DUPLEX, 1.5, Scalar(170, 150, 250), 1);
         
     }
     
@@ -309,7 +313,7 @@ Mat drawSolutionOnImage(Mat sudoku, vector<outputNum> addedNums){
     
     // draw vertical and horizontal lines that form "boxes"
     for(int i = 0; i < 4; i++){
-        int linePos = (i*3) * cellWidth + 26;
+        int linePos = ((i*3) * 50);
         Point h_p1 = Point(start, linePos);
         Point h_p2 = Point(end, linePos);
         
@@ -675,7 +679,6 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
 			   }
                 Mat res;
                 float p = knearest->findNearest(img123.reshape(1,1), 1, res);
-				cout << p << "\n";
                 //float p=knearest.find_nearest(img123.reshape(1,1),1);
 
                 z[i/9][i%9]=p;
@@ -703,31 +706,7 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
     return grid;
 }
 
-Mat testRemove(Mat img) {
-	Mat horizontal = img.clone();
-	Mat vertical = img.clone();
-	// Specify size on horizontal axis
-	int horizontal_size = horizontal.cols / 50;
-	// Create structure element for extracting horizontal lines through morphology operations
-	Mat horizontalStructure = getStructuringElement(MORPH_RECT, Size(horizontal_size, 1));
-	// Apply morphology operations
-	erode(horizontal, horizontal, horizontalStructure, Point(-1, -1));
-	dilate(horizontal, horizontal, horizontalStructure, Point(-1, -1));
-	// Show extracted horizontal lines
-	// Specify size on vertical axis
-	int vertical_size = vertical.rows / 50;
-	// Create structure element for extracting vertical lines through morphology operations
-	Mat verticalStructure = getStructuringElement(MORPH_RECT, Size(1, vertical_size));
-	// Apply morphology operations
-	erode(vertical, vertical, verticalStructure, Point(-1, -1));
-	dilate(vertical, vertical, verticalStructure, Point(-1, -1));
-	// Show extracted vertical lines
-	// Inverse vertical image
-	waitKey(0);
-	return img;
-}
-
-Mat tester(Mat img) {
+Mat removeGridLinesNew(Mat img) {
 	//cvtColor(img, img, COLOR_BGR2GRAY);
 	GaussianBlur(img, img, Size(7, 7), 0, 0);
 	adaptiveThreshold(img, img, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 5, 2);
@@ -767,72 +746,38 @@ Mat tester(Mat img) {
 
 int main( int argc, char** argv )
 {
-    
     // Pre-processing the image
     
-    Mat sudoku = imread("sudokuGood.jpg", 0);
+    Mat sudoku = imread("sudoku.jpeg", 0);
 	resize(sudoku, sudoku, Size(540, 540), 0, 0, INTER_NEAREST);
 
     // warpedSudoku is the image that has been warped to only show the grid
     Mat warpedSudoku = warpSudokuGrid(sudoku);
 	Mat test = warpedSudoku.clone();
 
-//        imshow("Warped Sudoku", warpedSudoku);
-//        waitKey(0);
+    Mat thresholded31;
 
-    
-
-    Mat ch; Mat thresholded31;
-    ch = warpedSudoku;
-
-    GaussianBlur(ch, ch, Size(11, 11), 0, 0);
-
-    adaptiveThreshold(ch, thresholded31, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 5, 2);
-    bitwise_not(thresholded31, thresholded31);
-
-    Mat kernel = (Mat_<uchar>(3,3) << 0,1,0,1,1,1,0,1,0);
-    dilate(thresholded31, thresholded31, kernel,Point(-1,-1),1);
-
-    erode(thresholded31,thresholded31,2);
-
-    //thresholded31 = removeGridLines(thresholded31);
-	thresholded31 = tester(test);
+	thresholded31 = removeGridLinesNew(test);
 
     // Identify numbers from image and create a grid
     
-
     vector<vector<int>> grid = readImageNumbers(thresholded31);
-	grid[8][3] = 3;
 	for (int i = 0; i < grid.size(); i++) {
 		for (int j = 0; j < grid[i].size(); j++) {
 			cout << grid[i][j] << " ";
 		}
 		cout << "\n";
 	}
-//        // For Testing:
-//        vector<vector<int>> grid = {{8, 0, 0, 0, 1, 0, 0, 0, 9},
-//        {0, 5, 0, 8, 0, 7, 0, 1, 0},
-//        {0, 0, 4, 0, 9, 0, 7, 0, 0},
-//        {0, 6, 0, 7, 0, 1, 0, 2, 0},
-//        {5, 0, 8, 0, 6, 0, 1, 0, 7},
-//        {0, 1, 0, 5, 0, 2, 0, 9, 0},
-//        {0, 0, 7, 0, 4, 0, 6, 0, 0},
-//        {0, 8, 0, 3, 0, 9, 0, 4, 0},
-//        {3, 0, 0, 0, 5, 0, 0, 0, 8}};
-
-    
-    //    printGrid(grid);
     
     // solve puzzle, and show solution on original image
     
-    //vector<vector<int>> solvedGrid = solveGrid(grid);
+    vector<vector<int>> solvedGrid = solveGrid(grid);
 
-    //vector<outputNum> addedNums = getNewNumbers(grid, solvedGrid);
+    vector<outputNum> addedNums = getNewNumbers(grid, solvedGrid);
+	cvtColor(warpedSudoku, warpedSudoku, CV_GRAY2BGR);
+	Mat solvedSudoku = drawSolutionOnImage(warpedSudoku, addedNums);
 
-    //Mat solvedSudoku = drawSolutionOnImage(thresholded31, addedNums);
-
-    
-    imshow("Solved Sudoku", thresholded31);
+    imshow("Solved Sudoku", solvedSudoku);
     waitKey(0);
 	return 0;
 }
