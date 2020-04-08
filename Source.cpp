@@ -18,7 +18,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<iostream>
-#include<dirent.h>
+#include "dirent.h"
 using namespace std;
 using namespace cv;
 
@@ -501,7 +501,7 @@ Mat removeGridLines(Mat thresholded31){
     {
         for( int i=p3;i<p3+10;i++)
         {
-            for(int j=0;j<thresholded31.cols;j++)
+            for(int j=0;j<thresholded31.rows;j++)
             {
                 thresholded31.at<uchar>(j,i)=0;
 
@@ -510,7 +510,7 @@ Mat removeGridLines(Mat thresholded31){
         p3+=47;
     }
 
-    while(p2<thresholded31.cols)
+    while(p2<thresholded31.rows)
     {
         for( int i=0;i<thresholded31.cols;i++)
         {
@@ -525,7 +525,7 @@ Mat removeGridLines(Mat thresholded31){
 
     for(int i=thresholded31.cols - 10;i<thresholded31.cols;i++)
     {
-        for(int j=0;j<thresholded31.cols;j++)
+        for(int j=0;j<thresholded31.rows;j++)
         {
             thresholded31.at<uchar>(j,i)=0;
         }
@@ -533,7 +533,7 @@ Mat removeGridLines(Mat thresholded31){
 
     for(int i=0;i<thresholded31.cols;i++)
     {
-        for(int j=thresholded31.cols - 10;j<thresholded31.cols;j++)
+        for(int j=thresholded31.rows - 10;j<thresholded31.rows;j++)
         {
             thresholded31.at<uchar>(j,i)=0;
         }
@@ -609,14 +609,15 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
     knearest->train(trainData, ml::ROW_SAMPLE, responces);
 
     vector <Mat> small; vector <Mat> smallt;
-
+	imshow("yaga", thresholded31);
     int m = 0, n = 0; Mat smallimage; Mat smallimage2;
-    for (; m < thresholded31.cols; m = m + 50)
+    for (; m < thresholded31.rows; m = m + 100)
     {
-        for (n = 0; n < thresholded31.cols; n = n + 50)
+        for (n = 0; n < thresholded31.cols; n = n + 100)
         {
-
-            smallimage = Mat(thresholded31, cv::Rect(n, m, 50, 50));
+			if (m < thresholded31.rows - 100 && n < thresholded31.cols - 100) {
+				smallimage = Mat(thresholded31, cv::Rect(n, m, 100, 100));
+			}
 
             smallt.push_back(smallimage);
         }
@@ -662,6 +663,7 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
             Rect rec = prevb;
 
             regionOfInterest = smallt[i](rec);
+			imshow("reg", regionOfInterest);
 
             resize(regionOfInterest, img12, Size(16,16),0,0,INTER_NEAREST);
 
@@ -674,15 +676,16 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
             Mat output;
             if(countNonZero(img12)>50)
             {
-                imshow("display",img12);
+               imshow("display" + i,img12);
                // waitKey(0);
-                for(int k=0;k<size;k++)
+                /*for(int k=0;k<size;k++)
                 {
                     img123.at<float>(k) = img12.at<float>(k);
-                }
-
+                }*/
+			   img123 = img12.clone();
                 Mat res;
                 float p = knearest->findNearest(img123.reshape(1,1), 1, res);
+				cout << p << "\n";
                 //float p=knearest.find_nearest(img123.reshape(1,1),1);
 
                 z[i/9][i%9]=p;
@@ -710,6 +713,71 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
     return grid;
 }
 
+Mat testRemove(Mat img) {
+	Mat horizontal = img.clone();
+	Mat vertical = img.clone();
+	// Specify size on horizontal axis
+	int horizontal_size = horizontal.cols / 50;
+	// Create structure element for extracting horizontal lines through morphology operations
+	Mat horizontalStructure = getStructuringElement(MORPH_RECT, Size(horizontal_size, 1));
+	// Apply morphology operations
+	erode(horizontal, horizontal, horizontalStructure, Point(-1, -1));
+	dilate(horizontal, horizontal, horizontalStructure, Point(-1, -1));
+	// Show extracted horizontal lines
+	// Specify size on vertical axis
+	int vertical_size = vertical.rows / 50;
+	// Create structure element for extracting vertical lines through morphology operations
+	Mat verticalStructure = getStructuringElement(MORPH_RECT, Size(1, vertical_size));
+	// Apply morphology operations
+	erode(vertical, vertical, verticalStructure, Point(-1, -1));
+	dilate(vertical, vertical, verticalStructure, Point(-1, -1));
+	// Show extracted vertical lines
+	// Inverse vertical image
+	imshow("vertical", vertical);
+	imshow("horizontal", horizontal);
+	waitKey(0);
+	return img;
+}
+
+Mat tester(Mat img) {
+	//cvtColor(img, img, COLOR_BGR2GRAY);
+	GaussianBlur(img, img, Size(7, 7), 0, 0);
+	adaptiveThreshold(img, img, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 5, 2);
+	Mat kernel = (Mat_<uchar>(3, 3) << 0, 1, 0, 1, 1, 1, 0, 1, 0);
+	dilate(img, img, kernel, Point(-1, -1), 1);
+	erode(img, img, 2);
+	Mat clone = img.clone();
+	Mat detected_lines;
+	Mat horizontal_kernel = getStructuringElement(MORPH_RECT, Size(25, 1));
+	morphologyEx(img, detected_lines, MORPH_OPEN, horizontal_kernel, Point(-1,-1), 2);
+	//cnts = cv2.findContours(detected_lines, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+	vector<vector<Point> > contours;
+	findContours(detected_lines, contours, RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+	Scalar color = Scalar(0, 0, 0);
+	//imshow("before", img);
+	for (int i = 0; i < contours.size(); i++) {
+		drawContours(img, contours, i, color, 5);
+	}
+
+	//imshow("horiz", img);
+
+	vector<vector<Point> > contours_vert;
+	Mat detected_lines_vert;
+	Mat vertical_kernel = getStructuringElement(MORPH_RECT, Size(1, 25));
+	morphologyEx(clone, detected_lines_vert, MORPH_OPEN, vertical_kernel, Point(-1, -1), 2);
+	//cnts = cv2.findContours(detected_lines, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+	findContours(detected_lines_vert, contours_vert, RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+	for (int i = 0; i < contours_vert.size(); i++) {
+		drawContours(clone, contours_vert, i, color, 5);
+	}
+	Mat yeet;
+	bitwise_and(img, clone, yeet);
+	//imshow("vert", clone);
+	imshow("yeet", yeet);
+	//waitKey(0);
+	return yeet;
+}
+
 int main( int argc, char** argv )
 {
     
@@ -719,6 +787,7 @@ int main( int argc, char** argv )
 
     // warpedSudoku is the image that has been warped to only show the grid
     Mat warpedSudoku = warpSudokuGrid(sudoku);
+	Mat test = warpedSudoku.clone();
 
 //        imshow("Warped Sudoku", warpedSudoku);
 //        waitKey(0);
@@ -737,17 +806,23 @@ int main( int argc, char** argv )
     dilate(thresholded31, thresholded31, kernel,Point(-1,-1),1);
 
     erode(thresholded31,thresholded31,2);
-//    imshow("sudoku part",thresholded31);
 
-    thresholded31 = removeGridLines(thresholded31);
+    //thresholded31 = removeGridLines(thresholded31);
+	thresholded31 = tester(test);
 
-    imshow("thresholded new",thresholded31);
-//    waitKey(0);
+    //imshow("thresholded new",thresholded31);
+	//waitKey(0);
 
     // Identify numbers from image and create a grid
     
 
     vector<vector<int>> grid = readImageNumbers(thresholded31);
+	for (int i = 0; i < grid.size(); i++) {
+		for (int j = 0; j < grid[i].size(); j++) {
+			cout << grid[i][j] << " ";
+		}
+		cout << "\n";
+	}
 
 //        // For Testing:
 //        vector<vector<int>> grid = {{8, 0, 0, 0, 1, 0, 0, 0, 9},
