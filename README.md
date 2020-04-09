@@ -40,3 +40,12 @@ Extract the grid from the picture and transform it so that the grid is the only 
 The digits will be detected and recognized through a neural net that can detect printed numbers and hand written numbers
 <br />Deliverable 5<br />
 The puzzle will be solved and the numbers will be placed onto the image to solve it
+
+# Final Report
+
+## Dependencies
+The program requires the header dirent.h. It is included in the POSIX library so if you are on a Mac or UNIX system you wont need the file. If you are using MSVC, you will need the dirent.h file added to the project.
+
+## Instructions
+
+## Final Results
