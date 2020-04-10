@@ -447,109 +447,6 @@ Mat warpSudokuGrid(Mat sudokuImg) {
 	waitKey(0);
 	return originalTransformed;
 }
-//
-//int main()
-//{
-//    // Pre-processing the image
-//
-//	Mat sudoku = imread("sudokuGood.jpg", 0);
-////    Mat sudoku = imread("/Users/jdlmmoore/Desktop/CarletonU/Year Three/Winter 2020/COMP 4102/COMP4102-Project/sudokuGood.jpg", 0);
-//	//warpedSudoku is the image that has been warped to only show the grid
-//	Mat warpedSudoku = warpSudokuGrid(sudoku);
-//
-//    // To show warped:
-////    imshow("Warped Sudoku", warpedSudoku);
-////    waitKey(0);
-//
-//
-//    // identifying numbers to create grid
-//
-//
-//
-//    vector<vector<int>> grid = {{8, 0, 0, 0, 1, 0, 0, 0, 9},
-//    {0, 5, 0, 8, 0, 7, 0, 1, 0},
-//    {0, 0, 4, 0, 9, 0, 7, 0, 0},
-//    {0, 6, 0, 7, 0, 1, 0, 2, 0},
-//    {5, 0, 8, 0, 6, 0, 1, 0, 7},
-//    {0, 1, 0, 5, 0, 2, 0, 9, 0},
-//    {0, 0, 7, 0, 4, 0, 6, 0, 0},
-//    {0, 8, 0, 3, 0, 9, 0, 4, 0},
-//    {3, 0, 0, 0, 5, 0, 0, 0, 8}};
-//
-//
-//
-//    // solve puzzle, and show solution on original image
-//
-//    vector<vector<int>> solvedGrid = solveGrid(grid);
-//
-//    vector<outputNum> addedNums = getNewNumbers(grid, solvedGrid);
-//
-//    Mat solvedSudoku = drawSolutionOnImage(sudoku, addedNums);
-//
-//    imshow("Solved Sudoku", solvedSudoku);
-//    waitKey(0);
-//	return 0;
-//}
-
-Mat removeGridLines(Mat thresholded31){
-    
-    // TODO: Add comments in this section
-    
-    int p2=0;int p3=0;
-    
-    while(p3<thresholded31.cols)
-    {
-        for( int i=p3;i<p3+10;i++)
-        {
-            for(int j=0;j<thresholded31.cols;j++)
-            {
-                thresholded31.at<uchar>(j,i)=0;
-
-            }
-        }
-        p3+=47;
-    }
-
-    while(p2<thresholded31.cols)
-    {
-        for( int i=0;i<thresholded31.cols;i++)
-        {
-            for(int j=p2;j<p2+10;j++)
-            {
-                thresholded31.at<uchar>(j,i)=0;
-
-            }
-        }
-        p2+=47;
-    }
-
-    for(int i=thresholded31.cols - 10;i<thresholded31.cols;i++)
-    {
-        for(int j=0;j<thresholded31.cols;j++)
-        {
-            thresholded31.at<uchar>(j,i)=0;
-        }
-    }
-
-    for(int i=0;i<thresholded31.cols;i++)
-    {
-        for(int j=thresholded31.cols - 10;j<thresholded31.cols;j++)
-        {
-            thresholded31.at<uchar>(j,i)=0;
-        }
-    }
-
-    for(int i=0;i<thresholded31.cols;i++)
-    {
-        for(int j=150;j<160;j++)
-        {
-            thresholded31.at<uchar>(j,i)=0;
-        }
-
-    }
-    
-    return thresholded31;
-}
 
 vector<vector<int>> readImageNumbers(Mat thresholded31){
     int num = 797;
@@ -705,7 +602,7 @@ vector<vector<int>> readImageNumbers(Mat thresholded31){
     return grid;
 }
 
-Mat removeGridLinesNew(Mat img) {
+Mat removeGridLines(Mat img) {
 	//cvtColor(img, img, COLOR_BGR2GRAY);
 	GaussianBlur(img, img, Size(7, 7), 0, 0);
 	adaptiveThreshold(img, img, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 5, 2);
@@ -756,7 +653,7 @@ int main( int argc, char** argv )
 
     Mat thresholded31;
 
-	thresholded31 = removeGridLinesNew(test);
+	thresholded31 = removeGridLines(test);
     // Identify numbers from image and create a grid
     
     vector<vector<int>> grid = readImageNumbers(thresholded31);
