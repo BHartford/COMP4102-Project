@@ -60,5 +60,7 @@ After running the image through the program. The answers to the sudoku puzzle ar
 ![Image of Solved Sudoku Image](sudoku2SOLVED.jpg)
 
 Another sudoku image
+
 ![Unsolved Sudoku Image](sudoku.jpeg)
+
 ![Unsolved Sudoku Image](sudokuSOLVED.jpg)
