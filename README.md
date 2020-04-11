@@ -44,10 +44,13 @@ The puzzle will be solved and the numbers will be placed onto the image to solve
 # Final Report
 
 ## Dependencies
-The program requires the header dirent.h. It is included in the POSIX library so if you are on a Mac or UNIX system you wont need the file. If you are using MSVC, you will need the dirent.h file added to the project.
+The program requires the header dirent.h. It is included in the C POSIX library so if you are on a Mac or UNIX system you wont need the file. If you are using MSVC, you will need the dirent.h file added to the project.
 
 ## Instructions
-
+* Pull code from repository
+* If you are on windows, add the dirent.h file as a header in the project.
+* Run the program and it will output the solved image of the sudoku puzzle.
+* There are 2 photos which are used for testing, sudoku.jpeg and sudoku2.jpg. The sudoku2.jpg file is currently in the code. To test the other image, change the image being loaded in, in the main method.
 ## Final Results
 This is an image of an unsolved sudoku image
 ![Image of Unsolved Sudoku Image](sudoku2.jpg)
@@ -55,3 +58,7 @@ This is an image of an unsolved sudoku image
 After running the image through the program. The answers to the sudoku puzzle are put back on the image and colorized to make it easier to see
 
 ![Image of Solved Sudoku Image](sudoku2SOLVED.jpg)
+
+Another sudoku image
+![Unsolved Sudoku Image](sudoku.jpeg)
+![Unsolved Sudoku Image](sudokuSOLVED.jpg)
