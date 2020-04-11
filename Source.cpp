@@ -670,7 +670,7 @@ int main( int argc, char** argv )
     vector<outputNum> addedNums = getNewNumbers(grid, solvedGrid);
 	cvtColor(warpedSudoku, warpedSudoku, CV_GRAY2BGR);
 	Mat solvedSudoku = drawSolutionOnImage(warpedSudoku, addedNums);
-
+	imwrite("solved.jpg", solvedSudoku);
     imshow("Solved Sudoku", solvedSudoku);
     waitKey(0);
 	return 0;
