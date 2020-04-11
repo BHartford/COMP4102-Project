@@ -49,4 +49,9 @@ The program requires the header dirent.h. It is included in the POSIX library so
 ## Instructions
 
 ## Final Results
+This is an image of an unsolved sudoku image
 ![Image of Unsolved Sudoku Image](sudoku2.jpg)
+
+After running the image through the program. The answers to the sudoku puzzle are put back on the image and colorized to make it easier to see
+
+![Image of Solved Sudoku Image](sudoku2SOLVED.jpg)
