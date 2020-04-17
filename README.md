@@ -48,7 +48,7 @@ The program requires the header dirent.h. It is included in the C POSIX library 
 
 ## Instructions
 * Pull code from repository
-* If you are on windows, add the dirent.h file as a header in the project.
+* If you are on windows, add the dirent.h file as a header in the project. If you are on Mac or Linux you will have to remove the dirent.h file.
 * Run the program and it will output the solved image of the sudoku puzzle.
 * There are 2 photos which are used for testing, sudoku.jpeg and sudoku2.jpg. The sudoku2.jpg file is currently in the code. To test the other image, change the image being loaded in, in the main method.
 ## Final Results
