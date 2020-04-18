@@ -68,17 +68,23 @@ Another sudoku image
 ## Final Report Doc
 
 COMP 4102
+
 Final Project Report
 
 Sudoku Solver
 
 Abhi Santhosh - 101055288
+
 Brandon Hartford - 100996828
+
 Eliza Moore - 100927429
 
 Carleton University
+
 School of Computer Science
+
 Submitted to: Rosa Azami
+
 April 15, 2020
 
 **Abstract**
